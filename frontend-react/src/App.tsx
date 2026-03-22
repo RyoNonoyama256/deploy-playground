@@ -12,7 +12,7 @@ function App() {
   return (
     <div className="app">
       <h1>🚀 Deploy Playground</h1>
-      <p className="subtitle">デプロイ実験場</p>
+      <p className="subtitle">デプロイ実験場 🔥</p>
 
       <DeployInfo deployTarget={deployTarget} buildTime={buildTime} />
 
