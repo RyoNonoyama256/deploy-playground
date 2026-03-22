@@ -1,22 +1,23 @@
-name: Deploy Frontend
+name: Deploy
 
 on:
   push:
     branches: [main]
-    paths:
-      - "frontend-react/**"
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
-  test-and-deploy:
+  # ============================================
+  # フロントエンド
+  # ============================================
+  frontend:
     runs-on: ubuntu-latest
+    if: contains(toJSON(github.event.commits.*.modified), 'frontend-react/') || contains(toJSON(github.event.commits.*.added), 'frontend-react/')
     defaults:
       run:
         working-directory: frontend-react
-
-    permissions:
-      id-token: write
-      contents: read
-
     steps:
       - uses: actions/checkout@v4
 
@@ -40,6 +41,8 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          VITE_API_URL: https://s83y2xi23f.execute-api.ap-northeast-1.amazonaws.com
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -52,3 +55,45 @@ jobs:
 
       - name: Invalidate CloudFront Cache
         run: aws cloudfront create-invalidation --distribution-id E1VS7XPHLE2S16 --paths "/*"
+
+  # ============================================
+  # バックエンド
+  # ============================================
+  backend:
+    runs-on: ubuntu-latest
+    if: contains(toJSON(github.event.commits.*.modified), 'backend-fastapi/') || contains(toJSON(github.event.commits.*.added), 'backend-fastapi/')
+    defaults:
+      run:
+        working-directory: backend-fastapi
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Test
+        run: pytest -v
+
+      - name: Build Lambda zip
+        run: |
+          mkdir -p package
+          pip install -r requirements.txt -t package/
+          cp app.py package/
+          cd package && zip -r ../lambda.zip .
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::634454708615:role/github-actions-deploy
+          aws-region: ap-northeast-1
+
+      - name: Deploy to Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name memo-api \
+            --zip-file fileb://lambda.zip
