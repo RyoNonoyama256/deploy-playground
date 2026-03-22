@@ -1,6 +1,12 @@
 import { useState, useEffect } from 'react'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const API_KEY = import.meta.env.VITE_API_KEY || ''
+
+const headers: Record<string, string> = {
+  'Content-Type': 'application/json',
+  ...(API_KEY ? { 'X-API-Key': API_KEY } : {}),
+}
 
 type Memo = {
   id: string
@@ -18,7 +24,7 @@ function MemoList() {
   const fetchMemos = async () => {
     setLoading(true)
     try {
-      const res = await fetch(`${API_URL}/memos`)
+      const res = await fetch(`${API_URL}/memos`, { headers })
       const data = await res.json()
       setMemos(data)
     } catch (err) {
@@ -36,7 +42,7 @@ function MemoList() {
     if (!title.trim()) return
     await fetch(`${API_URL}/memos`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({ title, content }),
     })
     setTitle('')
@@ -45,7 +51,7 @@ function MemoList() {
   }
 
   const deleteMemo = async (id: string) => {
-    await fetch(`${API_URL}/memos/${id}`, { method: 'DELETE' })
+    await fetch(`${API_URL}/memos/${id}`, { method: 'DELETE', headers })
     fetchMemos()
   }
 
