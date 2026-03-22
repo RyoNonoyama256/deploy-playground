@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 from pydantic import BaseModel
 
+# メモCRUD API
 app = FastAPI(title="Memo API")
 
 app.add_middleware(
