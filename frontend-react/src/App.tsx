@@ -2,6 +2,7 @@ import './App.css'
 import { useState } from 'react'
 import DeployInfo from './DeployInfo'
 import CountInfo from './CountInfo'
+import MemoList from './MemoList'
 
 function App() {
   const [count, setCount] = useState<number>(0)
@@ -17,6 +18,7 @@ function App() {
 
       <CountInfo countNum={count} setCount={setCount} />
 
+      <MemoList />
     </div>
   )
 }

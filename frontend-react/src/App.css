@@ -5,3 +5,121 @@
 .card table {
   margin: 0 auto;
 }
+
+.memo-section {
+  margin-top: 2rem;
+  padding: 0 2rem 2rem;
+}
+
+.memo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.memo-form input,
+.memo-form textarea {
+  font-family: var(--sans);
+  font-size: 14px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--code-bg);
+  color: var(--text-h);
+  outline: none;
+}
+
+.memo-form input,
+.memo-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.memo-form textarea {
+  height: 80px;
+  resize: vertical;
+}
+
+.memo-form input:focus,
+.memo-form textarea:focus {
+  border-color: var(--accent-border);
+}
+
+.memo-form button {
+  font-family: var(--sans);
+  font-size: 14px;
+  padding: 8px 20px;
+  border: 1px solid var(--accent-border);
+  border-radius: 6px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.memo-form button:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+.memo-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.memo-list li {
+  text-align: left;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--code-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+}
+
+.memo-list li strong {
+  color: var(--text-h);
+  font-size: 15px;
+}
+
+.memo-list li p {
+  font-size: 14px;
+  color: var(--text);
+}
+
+.memo-list li small {
+  font-size: 12px;
+  color: var(--text);
+  opacity: 0.6;
+}
+
+.memo-list li button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-family: var(--sans);
+  font-size: 12px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.memo-list li button:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
