@@ -3,21 +3,35 @@ import uuid
 from datetime import datetime, timezone
 
 import boto3
-from boto3.dynamodb.conditions import Key
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from mangum import Mangum
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 # メモCRUD API
 app = FastAPI(title="Memo API")
 
+ALLOWED_ORIGIN = os.environ.get("ALLOWED_ORIGIN", "http://localhost:5173")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGIN.split(","),
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+API_KEY = os.environ.get("API_KEY", "")
+
+
+@app.middleware("http")
+async def check_api_key(request: Request, call_next):
+    if request.method == "OPTIONS":
+        return await call_next(request)
+    if API_KEY and request.headers.get("X-API-Key") != API_KEY:
+        return JSONResponse(status_code=401, content={"detail": "Invalid API Key"})
+    return await call_next(request)
+
 
 TABLE_NAME = os.environ.get("TABLE_NAME", "Memos")
 
@@ -32,8 +46,8 @@ table = dynamodb.Table(TABLE_NAME)
 
 
 class MemoCreate(BaseModel):
-    title: str
-    content: str = ""
+    title: str = Field(..., min_length=1, max_length=200)
+    content: str = Field("", max_length=10000)
 
 
 class Memo(BaseModel):
